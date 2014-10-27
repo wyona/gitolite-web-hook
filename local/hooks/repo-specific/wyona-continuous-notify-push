@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# Copyright (c) 2014 Michael Wechner (http://www.wyona.com)
+#
+# A web hook posting json, whereas please make sure to re-configure the URL below
+#
+
+send_json()
+{
+        # --- Arguments
+        oldrev=$(git rev-parse $1)
+        newrev=$(git rev-parse $2)
+        refname="$3"
+
+        echo "Old revision: $oldrev"
+        echo "New revision: $newrev"
+        echo "Branch: $refname"
+
+        lines_read=()
+        echo ""
+        echo "Summary of changes:"
+        while read next_line
+        do
+            echo "$next_line"
+            lines_read+=("$next_line")
+        done < <(git diff-tree --stat --summary --find-copies-harder $oldrev..$newrev)
+        echo ""
+
+        #echo "First line: ${lines_read[0]}"
+        MODIFIED_FILES="["
+        counter=1
+        for LINE in "${lines_read[@]}"
+        do
+            if [ $counter -lt "${#lines_read[@]}" ]; then
+                #echo "Process line: $LINE" # For example "README.txt |    2 +-"
+                splittedArray=(${LINE/\|/})
+                modifiedFile=$(echo ${splittedArray[0]} | sed 's/ *$//')
+                #echo "Modified file: \"$modifiedFile\""
+                MODIFIED_FILES=$MODIFIED_FILES\"$modifiedFile\"
+                length_minus_one=`expr ${#lines_read[@]} - 1`
+                if [ $counter -lt $length_minus_one ]; then
+                    MODIFIED_FILES=$MODIFIED_FILES","
+                fi
+            #else
+                #echo "Ignore last line: $LINE"
+            fi
+            counter=`expr $counter + 1`
+        done
+        MODIFIED_FILES=$MODIFIED_FILES"]"
+
+    DATA={\"ref\":\"$refname\",\"created\":fale,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"$GL_REPO\",\"url\":\"git@git.wyona.com:$GL_REPO.git\"},\"commits\":[{\"id\":\"e047ef8fd645a236beb891a3fe930c14e62f1073\",\"modified\":$MODIFIED_FILES}]}
+
+    #DATA={\"ref\":\"refs/heads/master\",\"created\":fale,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"yanel\",\"url\":\"https://github.com/wyona/yanel\"},\"commits\":[{\"id\":\"e047ef8fd645a236beb891a3fe930c14e62f1073\",\"modified\":[\"resources/github-post-receive/src/java/com/wyona/yanel/impl/resources/github/PostReceiveResource.java\"]}]}
+
+    echo ""
+    echo "Send json ..."
+    echo ""
+
+    URL=http://continuous.wyona.com/scm-postreceive
+
+    #URL=http://127.0.0.1:8080/yanel/continuous/scm-postreceive
+
+    /usr/bin/curl --header "content-type: application/json" --data "$DATA" $URL
+}
+
+# --- Main loop
+# Allow dual mode: run from the command line just like the update hook, or
+# if no arguments are given then run as a hook script
+if [ -n "$1" -a -n "$2" -a -n "$3" ]; then
+        # Output to the terminal in command line mode - if someone wanted to
+        # resend an email; they could redirect the output to sendmail
+        # themselves
+        echo "Mode 1"
+        PAGER= send_json $2 $3 $1
+else
+        echo "Mode 2"
+        while read oldrev newrev refname
+        do
+                send_json $oldrev $newrev $refname
+        done
+fi
