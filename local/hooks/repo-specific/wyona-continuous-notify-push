@@ -23,7 +23,7 @@ send_json()
         do
             echo "$next_line"
             lines_read+=("$next_line")
-        done < <(git diff-tree --stat --summary --find-copies-harder $oldrev..$newrev)
+        done < <(git diff-tree --stat --stat-name-width=9999 --summary --find-copies-harder $oldrev..$newrev)
         echo ""
 
         #echo "First line: ${lines_read[0]}"
