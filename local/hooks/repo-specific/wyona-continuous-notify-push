@@ -23,7 +23,8 @@ send_json()
         do
             echo "$next_line"
             lines_read+=("$next_line")
-        done < <(git diff-tree --stat --stat-name-width=9999 --summary --find-copies-harder $oldrev..$newrev)
+        done < <(git diff --name-only $oldrev..$newrev)
+        #done < <(git diff-tree --stat --stat-name-width=9999 --summary --find-copies-harder $oldrev..$newrev)
         echo ""
 
         #echo "First line: ${lines_read[0]}"
@@ -31,19 +32,29 @@ send_json()
         counter=1
         for LINE in "${lines_read[@]}"
         do
-            if [ $counter -lt "${#lines_read[@]}" ]; then
-                #echo "Process line: $LINE" # For example "README.txt |    2 +-"
-                splittedArray=(${LINE/\|/})
-                modifiedFile=$(echo ${splittedArray[0]} | sed 's/ *$//')
-                #echo "Modified file: \"$modifiedFile\""
-                MODIFIED_FILES=$MODIFIED_FILES\"$modifiedFile\"
-                length_minus_one=`expr ${#lines_read[@]} - 1`
-                if [ $counter -lt $length_minus_one ]; then
-                    MODIFIED_FILES=$MODIFIED_FILES","
-                fi
-            #else
-                #echo "Ignore last line: $LINE"
+            # INFO: Use the following code below when using 'diff'
+            modifiedFile=$(echo $LINE | sed 's/ *$//') # INFO: Trim (remove leading and traling spaces)
+            echo "Modified file: \"$modifiedFile\""
+            MODIFIED_FILES=$MODIFIED_FILES\"$modifiedFile\"
+            length_minus_one=`expr ${#lines_read[@]} - 0`
+            if [ $counter -lt $length_minus_one ]; then
+                MODIFIED_FILES=$MODIFIED_FILES","
             fi
+
+            # INFO: Use the code below when using 'diff-tree'
+#            if [ $counter -lt "${#lines_read[@]}" ]; then
+#                #echo "Process line: $LINE" # For example "README.txt |    2 +-"
+#                splittedArray=(${LINE/\|/})
+#                modifiedFile=$(echo ${splittedArray[0]} | sed 's/ *$//')
+#                #echo "Modified file: \"$modifiedFile\""
+#                MODIFIED_FILES=$MODIFIED_FILES\"$modifiedFile\"
+#                length_minus_one=`expr ${#lines_read[@]} - 1`
+#                if [ $counter -lt $length_minus_one ]; then
+#                    MODIFIED_FILES=$MODIFIED_FILES","
+#                fi
+#            #else
+#                #echo "Ignore last line: $LINE"
+#            fi
             counter=`expr $counter + 1`
         done
         MODIFIED_FILES=$MODIFIED_FILES"]"
