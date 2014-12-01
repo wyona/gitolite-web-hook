@@ -1,6 +1,6 @@
 
-README
-======
+R E A D M E
+===========
 
 github like web hook, which is posting commit/push information as json (also see https://developer.github.com/webhooks/creating/)
 
