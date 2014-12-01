@@ -7,7 +7,7 @@ The URL to which the commit messages are being posted, needs to be configured in
 
 local/hooks/repo-specific/wyona-continuous-notify-push
 
-(see URL)
+(see the parameter URL)
 
 Inside conf/gitolite.conf please use it as follows:
 
