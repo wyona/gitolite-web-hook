@@ -14,3 +14,7 @@ Inside conf/gitolite.conf please use it as follows:
 
 repo    foor-bar-repo  
         option hook.post-receive = wyona-continuous-notify-push
+
+whereas the script itself needs to be located inside the sub-directory
+
+local/hooks/repo-specific
