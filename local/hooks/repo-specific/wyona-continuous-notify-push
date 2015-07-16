@@ -68,7 +68,8 @@ send_json()
     echo ""
 
     #URL=http://continuous.wyona.com/scm-postreceive
-    URL=https://continuous.wyona.com/scm-postreceive
+    #URL=https://continuous.wyona.com/scm-postreceive
+    URL=https://www.yulup.com/scm-postreceive
 
     #URL=http://127.0.0.1:8080/yanel/continuous/scm-postreceive
 
