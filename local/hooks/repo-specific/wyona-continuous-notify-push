@@ -59,7 +59,7 @@ send_json()
         done
         MODIFIED_FILES=$MODIFIED_FILES"]"
 
-    DATA={\"ref\":\"$refname\",\"after\":\"$newrev\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"$GL_REPO\",\"url\":\"git@git.wyona.com:$GL_REPO.git\"},\"commits\":[{\"id\":\"$newrev\",\"committer\":{\"name\":\"TODO_NAME\",\"email\":\"TODO_EMAIL\"},\"modified\":$MODIFIED_FILES}],\"head_commit\":{\"author\":{\"name\":\"TODO_AUTHOR_NAME\",\"email\":\"TODO_AUTHOR_EMAIL\"}}}
+    DATA={\"ref\":\"$refname\",\"after\":\"$newrev\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"$GL_REPO\",\"url\":\"git@git.wyona.com:$GL_REPO.git\"},\"commits\":[{\"id\":\"$newrev\",\"committer\":{\"name\":\"TODO_NAME\",\"email\":\"TODO_EMAIL\"},\"added\":[],\"removed\":[],\"modified\":$MODIFIED_FILES}],\"head_commit\":{\"author\":{\"name\":\"TODO_AUTHOR_NAME\",\"email\":\"TODO_AUTHOR_EMAIL\"}}}
 
     #DATA={\"ref\":\"refs/heads/master\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"yanel\",\"url\":\"https://github.com/wyona/yanel\"},\"commits\":[{\"id\":\"e047ef8fd645a236beb891a3fe930c14e62f1073\",\"modified\":[\"resources/github-post-receive/src/java/com/wyona/yanel/impl/resources/github/PostReceiveResource.java\"]}]}
 
@@ -67,11 +67,11 @@ send_json()
     echo "Send json ..."
     echo ""
 
-    #URL=http://continuous.wyona.com/scm-postreceive
-    #URL=https://continuous.wyona.com/scm-postreceive
+    # Production
     URL=https://www.yulup.com/scm-postreceive
 
-    #URL=http://127.0.0.1:8080/yanel/continuous/scm-postreceive
+    # Development
+    #URL=http://127.0.0.1:8080/yanel/yulup/scm-postreceive
 
     /usr/bin/curl --insecure --header "content-type: application/json" --data "$DATA" $URL
 }
@@ -92,3 +92,5 @@ else
                 send_json $oldrev $newrev $refname
         done
 fi
+
+exit 0
