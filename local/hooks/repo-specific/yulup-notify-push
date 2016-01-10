@@ -1,9 +1,16 @@
 #!/bin/bash
 #
-# Copyright (c) 2014 Michael Wechner (http://www.wyona.com)
+# Copyright (c) 2014 - 2016 Wyona (http://www.wyona.com)
 #
-# A web hook posting json, whereas please make sure to re-configure the URL below
+# A web hook posting json, whereas please make sure to re-configure the parameters 'URL' and 'HOST' below
 #
+
+# Production
+URL=https://www.yulup.com/scm-postreceive
+# Development
+#URL=http://127.0.0.1:8080/yanel/yulup/scm-postreceive
+
+HOST=git@git.wyona.com
 
 send_json()
 {
@@ -59,19 +66,15 @@ send_json()
         done
         MODIFIED_FILES=$MODIFIED_FILES"]"
 
-    DATA={\"ref\":\"$refname\",\"after\":\"$newrev\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"$GL_REPO\",\"url\":\"git@git.wyona.com:$GL_REPO.git\"},\"commits\":[{\"id\":\"$newrev\",\"committer\":{\"name\":\"TODO_NAME\",\"email\":\"TODO_EMAIL\"},\"added\":[],\"removed\":[],\"modified\":$MODIFIED_FILES}],\"head_commit\":{\"author\":{\"name\":\"TODO_AUTHOR_NAME\",\"email\":\"TODO_AUTHOR_EMAIL\"}}}
+    REPO_NAME=$GL_REPO
+
+    DATA={\"ref\":\"$refname\",\"after\":\"$newrev\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"$REPO_NAME\",\"url\":\"$HOST:$REPO_NAME.git\"},\"commits\":[{\"id\":\"$newrev\",\"committer\":{\"name\":\"TODO_NAME\",\"email\":\"TODO_EMAIL\"},\"added\":[],\"removed\":[],\"modified\":$MODIFIED_FILES}],\"head_commit\":{\"author\":{\"name\":\"TODO_AUTHOR_NAME\",\"email\":\"TODO_AUTHOR_EMAIL\"}}}
 
     #DATA={\"ref\":\"refs/heads/master\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"yanel\",\"url\":\"https://github.com/wyona/yanel\"},\"commits\":[{\"id\":\"e047ef8fd645a236beb891a3fe930c14e62f1073\",\"modified\":[\"resources/github-post-receive/src/java/com/wyona/yanel/impl/resources/github/PostReceiveResource.java\"]}]}
 
     echo ""
-    echo "Send json ..."
+    echo "Send JSON to '$URL' ..."
     echo ""
-
-    # Production
-    URL=https://www.yulup.com/scm-postreceive
-
-    # Development
-    #URL=http://127.0.0.1:8080/yanel/yulup/scm-postreceive
 
     /usr/bin/curl --insecure --header "content-type: application/json" --data "$DATA" $URL
 }
