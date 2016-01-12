@@ -75,14 +75,14 @@ send_json()
     #AUTHOR=`git --no-pager show -s --format='%an <%ae>' $newrev`
     AUTHOR_NAME=`git --no-pager show -s --format='%an' $newrev`
     AUTHOR_EMAIL=`git --no-pager show -s --format='%ae' $newrev`
-    echo "DEBUG: Author of change: $AUTHOR_NAME ($AUTHOR_EMAIL)"
+    #echo "DEBUG: Author of change: $AUTHOR_NAME ($AUTHOR_EMAIL)"
 
     DATA={\"ref\":\"$refname\",\"after\":\"$newrev\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"$REPO_NAME\",\"url\":\"$HOST:$REPO_DIR_BASENAME\"},\"commits\":[{\"id\":\"$newrev\",\"committer\":{\"name\":\"TODO_NAME\",\"email\":\"TODO_EMAIL\"},\"added\":[],\"removed\":[],\"modified\":$MODIFIED_FILES}],\"head_commit\":{\"author\":{\"name\":\"$AUTHOR_NAME\",\"email\":\"$AUTHOR_EMAIL\"}}}
 
     #DATA={\"ref\":\"refs/heads/master\",\"created\":false,\"deleted\":false,\"forced\":false,\"repository\":{\"name\":\"yanel\",\"url\":\"https://github.com/wyona/yanel\"},\"commits\":[{\"id\":\"e047ef8fd645a236beb891a3fe930c14e62f1073\",\"modified\":[\"resources/github-post-receive/src/java/com/wyona/yanel/impl/resources/github/PostReceiveResource.java\"]}]}
 
     echo ""
-    echo "Notify '$URL' about changes inside '$REPO_NAME' ($REPO_DIR_BASENAME) via JSON ..."
+    echo "Notify '$URL' about changes inside '$REPO_NAME' ($HOST:$REPO_DIR_BASENAME) via JSON ..."
     echo ""
 
     /usr/bin/curl --insecure --header "content-type: application/json" --data "$DATA" $URL
